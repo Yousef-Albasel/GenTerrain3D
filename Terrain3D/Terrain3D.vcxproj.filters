@@ -8,8 +8,55 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Terrain\CTerrain.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\Vendor\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Vendor\Camera.cpp" />
+    <ClCompile Include="src\Vendor\ElementBuffer.cpp" />
+    <ClCompile Include="src\Vendor\Shader.cpp" />
+    <ClCompile Include="src\Vendor\VertexArray.cpp" />
+    <ClCompile Include="src\Vendor\VertexBuffer.cpp" />
+    <ClCompile Include="src\Vendor\Window.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Terrain\CTerrain.h" />
+    <ClInclude Include="src\Terrain\CBruteForce.h" />
+    <ClInclude Include="src\Vendor\imgui\imconfig.h" />
+    <ClInclude Include="src\Vendor\imgui\imgui.h" />
+    <ClInclude Include="src\Vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\Vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\Vendor\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\Vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="src\Vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\Vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\Vendor\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Vendor\Camera.h" />
+    <ClInclude Include="src\Vendor\ElementBuffer.h" />
+    <ClInclude Include="src\Vendor\Shader.h" />
+    <ClInclude Include="src\Vendor\stb_image.h" />
+    <ClInclude Include="src\Vendor\VertexArray.h" />
+    <ClInclude Include="src\Vendor\VertexBuffer.h" />
+    <ClInclude Include="src\Vendor\VertexBufferLayout.h" />
+    <ClInclude Include="src\Vendor\Window.h" />
+    <ClInclude Include="src\Gen\HeightMapGen.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Heightmaps\test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Heightmaps\iceland_heightmap.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\basic.shader" />
   </ItemGroup>
 </Project>

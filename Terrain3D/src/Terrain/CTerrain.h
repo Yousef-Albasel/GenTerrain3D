@@ -1,48 +1,32 @@
 #pragma once
-struct SHEIGHT_DATA
+#include <vector>
+struct HEIGHT_Map
 {
-	unsigned char* m_pucData; //the height data
-	int m_iSize; //the height size (power of 2)
+	std::vector<std::vector<float>> HeightMapData;
+	int height;
+	int width;
+	int m_iSize;
 };
 
 class CTerrain {
 protected:
-	SHEIGHT_DATA m_heightData;
-	float m_fHeightScale;		// Scaling Variable
-
+	std::vector<float>vertices;
+	std::vector<unsigned int> indicies;
+	HEIGHT_Map heightmap;
+	unsigned int numOfStrips;
+	unsigned int verticesPerStrip;
 public:
-	int m_iSize;
-	virtual void Render(void) = 0;
-	bool LoadHeightMap(char* szFileName, int iSize);
-	bool SaveHeightMap(char* szFileName);
-
-	inline void SetHeightScale(float fScale) // Set the height scaling variable
-	{
-		m_fHeightScale = fScale;
-	}
-
-	inline void SetHeightAtPoint(unsigned char ucHeight,int iX, int iZ) // set height for a specific point
-	{
-		m_heightData.m_pucData[(iZ * m_iSize) + iX] = ucHeight;
-	}
-
-	inline unsigned char GetTrueHeightAtPoint(int iX, int iZ) // gets the height value at a point
-	{ 
-		return (m_heightData.m_pucData[(iZ * m_iSize) + iX]);
-	}
-
-	inline float GetScaledHeightAtPoint(int iX, int iZ)
-	{
-		return ((m_heightData.m_pucData[(iZ * m_iSize) + iX]
-			) * m_fHeightScale);
-	}
-	CTerrain(void)
+	//virtual void Render(void) = 0;
+	bool LoadHeightMap(const char* mapPath);
+	//bool UnloadHeightMap();
+	bool GenerateVertices();
+;	CTerrain(void)
 	{ };
 	~CTerrain(void)
 	{ };
 
-
-
-
-
+	std::vector<float>getVBO() { return vertices; }
+	std::vector<unsigned int>getEBO() { return indicies; }
+	unsigned int getNStrips() { return numOfStrips; }
+	unsigned int getNVertices() { return verticesPerStrip; }
 };

@@ -1,37 +1,42 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Vendor/window.h"
+#include "Renderer.h"
+#include "Terrain/CTerrain.h"
+#include "Vendor/Camera.h"
 
-int main(void)
-{
-    GLFWwindow* window;
+// Global camera instance
+Camera camera;
 
-    /* Initialize the library */
-    if (!glfwInit())
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    camera.mouse_callback(window, xpos, ypos);
+}
+
+int main(void) {
+    Window window(640, 480, "Hello World");
+    CTerrain mterrain;
+    if (!mterrain.LoadHeightMap("Heightmaps/iceland_heightmap.png"))
         return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
+    float deltaTime = 0.0f;	// Time between current frame and last frame
+    float lastFrame = 0.0f; // Time of last frame
+    glfwSetInputMode(window.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window.GetWindow(), mouse_callback);
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    Renderer renderer(mterrain);
+    renderer.Init();
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
+    while (!window.shouldClose()) {
         glClear(GL_COLOR_BUFFER_BIT);
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        float cameraSpeed = 2.5f;
 
+        renderer.Render();
+        renderer.processInput(window,cameraSpeed,deltaTime);
 
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
+        glfwSwapBuffers(window.GetWindow());
         glfwPollEvents();
     }
 
