@@ -1,73 +1,85 @@
 #include "Renderer.h"
-#include "Vendor/Window.h"
-#include "glm/glm.hpp"
-#include <glm/gtc/type_ptr.hpp>
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-Renderer::Renderer(CTerrain& terrain) : m_terrain(terrain), VAO(0), VBO(0), EBO(0) {};
-
-void Renderer::Init(){
-    GLCall(glGenVertexArrays(1, &VAO));
-    GLCall(glBindVertexArray(VAO));
-    std::vector<float>vertices = m_terrain.getVBO();
-    std::vector<unsigned int>indices= m_terrain.getEBO();
-    GLCall(glGenBuffers(1, &VBO));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW));
-
-    // position attribute
-    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-    GLCall(glEnableVertexAttribArray(0));
-
-    GLCall(glGenBuffers(1, &EBO));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),&indices[0],GL_STATIC_DRAW));
-    shader = new Shader("Shaders/basic.shader");
-    
+#include "../Models/Cube.h"
+void Renderer::Init() {
 }
-void Renderer::processInput(Window &window,float speed,float deltaTime) {
-    m_camera.ProcessInputs(window.GetWindow(), speed,deltaTime);
-}
+
+
 void Renderer::Render() {
-    // Create Shader
-    shader->Bind();
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    terrain.Bind();
     glm::mat4 model = glm::mat4(1.0f);
-    shader->setUniformMatrix4fv("model", 1, GL_FALSE, model);
+    glm::mat4 view = camera->getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
 
-    // View Matrix Setup
-    glm::mat4 view = glm::mat4(1.0f);
-    view = m_camera.setViewMat();
-    shader->setUniformMatrix4fv("view", 1, GL_FALSE, view);
-    //glm::vec3 CameraPos = m_camera.getCameraPos();
-    // Projection Matrix setup
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(80.0f), 640.0f / 480.0f, 0.1f, 1000.0f);
-    shader->setUniformMatrix4fv("projection", 1, GL_FALSE, projection);
+    shader->Bind();
+    shader->setMVP(model, view, projection);
+    terrain.Draw();
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    GLCall(glBindVertexArray(VAO));
-    const unsigned int NUM_STRIPS = m_terrain.getNStrips();
-    const unsigned int NUM_VERTS_PER_STRIP = m_terrain.getNVertices();
-    for (unsigned int strip = 0; strip < NUM_STRIPS; ++strip)
-    {
-        GLCall(glDrawElements(GL_TRIANGLE_STRIP,   // primitive type
-            NUM_VERTS_PER_STRIP, // number of indices to render
-            GL_UNSIGNED_INT,     // index data type
-            (void*)(sizeof(unsigned int)
-                * NUM_VERTS_PER_STRIP
-                * strip))); // offset to starting index
-    }
 }
-
 
 void Renderer::Clean() {
-    // Delete buffers and VAO
-    GLCall(glDeleteVertexArrays(1, &VAO));
-    GLCall(glDeleteBuffers(1, &VBO));
-    GLCall(glDeleteBuffers(1, &EBO));
+    // Clean up resources
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    delete camera;
+    delete shader;
 }
 
-Renderer::~Renderer() {
-    Clean();
+
+void Renderer::processKeyboardInput(GLFWwindow* window, float deltaTime) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        //std::cout << "Moving Forward\n";
+        camera->updateKeyboardInput(deltaTime, 0);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        //std::cout << "Moving Backward\n";
+        camera->updateKeyboardInput(deltaTime, 1);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        //std::cout << "Moving Left\n";
+        camera->updateKeyboardInput(deltaTime, 3);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        //std::cout << "Moving Right\n";
+        camera->updateKeyboardInput(deltaTime, 2);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // DOWN
+        camera->updateKeyboardInput(deltaTime, 4);
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) // UP
+        camera->updateKeyboardInput(deltaTime, 5);
+
+    //std::cout << "Camera Position: "
+    //    << camera->getCameraPos().x << ", "
+    //    << camera->getCameraPos().y << ", "
+    //    << camera->getCameraPos().z << std::endl;
+}
+
+void Renderer::ProcessMouseInput(GLFWwindow* window,const float &dt)
+{
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    //std::cout << mouseX << " : " << mouseY << std::endl;
+    float xpos = static_cast<float>(mouseX);
+    float ypos = static_cast<float>(mouseY);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera->updateMouseInput(dt,xoffset, yoffset);
 }

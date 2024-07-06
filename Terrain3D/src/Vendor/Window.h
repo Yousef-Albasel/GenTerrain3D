@@ -15,6 +15,7 @@ void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 
 class Window {
+    int SCREEN_WIDTH, SCREEN_HEIGHT;
 public:
     Window(int width, int height, const std::string& title);
     ~Window();
@@ -22,6 +23,13 @@ public:
     bool shouldClose() const;
     GLFWwindow* m_window;
     GLFWwindow* GetWindow() { return m_window; }
+    int getWidth() { return SCREEN_WIDTH; }
+    int getHeight() { return SCREEN_HEIGHT; }
+    void calculateDeltaTime(float &deltaTime, float &lastFrame) {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+    }
 };
 
 

@@ -46,6 +46,11 @@ public:
      void PrintShaderInfo(){
          std::cout << path << std::endl;
      }
+     void setMVP(glm::mat4 model, glm::mat4 view, glm::mat4 projection) {
+         setUniformMat4f("model", model);
+         setUniformMat4f("view", view);
+         setUniformMat4f("projection", projection);
+     }
 };
 
 #endif

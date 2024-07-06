@@ -14,33 +14,30 @@ bool CTerrain::LoadHeightMap(const char* mapPath)
     int total = width * height * nChannels;
     std::printf("%d",total);
     float yScale = 64.0f / 256.0f, yShift = 16.0f;  // apply a scale+shift to the height data
-    vertices.reserve(width * height * 3);
-    for (unsigned int i = 0; i < height; i++)
-    {
-        for (unsigned int j = 0; j < width; j++)
-        {
-            // since the data is 1D, we need to apply this equation to get the right index
-            unsigned char* texel = data + (j + width * i) * nChannels;
-            unsigned char y = texel[0]; // raw height
 
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            unsigned char* pixelOffset = data + (j + width * i) * nChannels;
+            unsigned char y = pixelOffset[0];
+
+            // vertex
             vertices.push_back(-height / 2.0f + height * i / (float)height);   // vx
-            vertices.push_back((int)y * yScale - yShift);   // vy
+            vertices.push_back((float)y * yScale - yShift);   // vy
             vertices.push_back(-width / 2.0f + width * j / (float)width);   // vz
         }
     }
 
     // index generation
-    indicies.reserve((height - 1) * width * 2);
-    for (unsigned int i = 0; i < height - 1; i++)       // for each row a.k.a. each strip
-    {
-        for (unsigned int j = 0; j < width; j++)      // for each column
-        {
-            for (unsigned int k = 0; k < 2; k++)      // for each side of the strip
-            {
+    for (unsigned i = 0; i < height - 1; i ++) {
+        for (unsigned j = 0; j < width; j ++) {
+            for (unsigned k = 0; k < 2; k++) {
                 indicies.push_back(j + width * (i + k));
             }
         }
     }
+
 
     numOfStrips = height - 1;
     verticesPerStrip= width * 2;
@@ -48,10 +45,42 @@ bool CTerrain::LoadHeightMap(const char* mapPath)
     stbi_image_free(data);
     return true;    
 }
-
-bool CTerrain::GenerateVertices()
+bool CTerrain::GenerateVertices(HeightMapGen& h_generator, int width, int height, int nChannels)
 {
-    return false;
+    //std::vector<float> data = h_generator.GenerateHightMap(height, width);
+    //if (data.empty()) return false;
+
+    //float yScale = 64.0f / 255.0f, yShift = 16.0f;  // Adjusted scale to match LoadHeightMap
+
+    //for (int i = 0; i < height; i++)
+    //{
+    //    for (int j = 0; j < width; j++)
+    //    {
+    //        int idx = (i * width + j);
+    //        float y = data[idx];  // Use the height value directly from the generator
+
+    //        // Scale and shift the height value to match LoadHeightMap
+    //        y = ((y + 1.0f) / 2.0f) * 255.0f;  // Convert -1.0f to 1.0f range to 0 to 255
+
+    //        // vertex
+    //        vertices.push_back(-height / 2.0f + height * i / (float)height);   // vx
+    //        vertices.push_back(y * yScale - yShift);   // vy, using scaled y
+    //        vertices.push_back(-width / 2.0f + width * j / (float)width);   // vz
+    //    }
+    //}
+
+    //for (unsigned i = 0; i < height - 1; i++) {
+    //    for (unsigned j = 0; j < width; j++) {
+    //        for (unsigned k = 0; k < 2; k++) {
+    //            indicies.push_back(j + width * (i + k));
+    //        }
+    //    }
+    //}
+
+    //numOfStrips = height - 1;
+    //verticesPerStrip = width * 2;
+    //printf("\n%d", numOfStrips * verticesPerStrip);
+    return true;
 }
 
 //

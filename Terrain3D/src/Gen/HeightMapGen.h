@@ -3,7 +3,7 @@
 class HeightMapGen
 {
 public:
-	virtual std::vector<std::vector <float>> GenerateHightMap() = 0;
+	virtual std::vector<float> GenerateHightMap(int height, int width) =0;
 };
 
 

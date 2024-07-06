@@ -31,11 +31,13 @@ Window::Window(int width, int height, const std::string& title) : m_window(nullp
         glfwTerminate();
         return;
     }
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwMakeContextCurrent(m_window);
     glewExperimental = GL_TRUE;
     initGlew();
-
+    SCREEN_WIDTH = width;
+    SCREEN_HEIGHT = height;
 }
 
 Window::~Window() {
