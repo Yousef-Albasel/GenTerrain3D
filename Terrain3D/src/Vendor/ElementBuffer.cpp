@@ -3,6 +3,7 @@
 #include "Window.h"
 
 ElementBuffer::ElementBuffer(const void* data, unsigned int size) {
+    m_Count = size / sizeof(unsigned int);
     GLCall(glGenBuffers(1, &m_RendererID));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID));
 

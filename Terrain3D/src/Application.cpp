@@ -11,11 +11,11 @@ int main(void) {
     float deltaTime = 0.0f;	// Time between current frame and last frame
     float lastFrame = 0.0f; // Time of last frame
     Renderer renderer;
+    renderer.Init();
     while (!window.shouldClose()) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         window.calculateDeltaTime(deltaTime, lastFrame);
 
-        renderer.Init();
         renderer.Render();
         renderer.processKeyboardInput(window.GetWindow(),deltaTime);
         renderer.ProcessMouseInput(window.GetWindow(),deltaTime);

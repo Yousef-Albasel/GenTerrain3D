@@ -38,6 +38,8 @@ Window::Window(int width, int height, const std::string& title) : m_window(nullp
     initGlew();
     SCREEN_WIDTH = width;
     SCREEN_HEIGHT = height;
+    glEnable(GL_DEPTH_TEST);
+
 }
 
 Window::~Window() {

@@ -8,9 +8,11 @@ protected:
 	const float SIZE = 100.f;
 	int terrainWidth;
 	int terrainDepth;
+
 	int vertexCount;
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
+	
 	unsigned int VAO;  // VAO ID
 	unsigned int VBO;  // VBO ID
 	unsigned int EBO;  // EBO ID
@@ -30,4 +32,7 @@ public:
 	//unsigned int GetNumberOfIndices() const { return numOfIndices; }
 	float getSize() { return SIZE; }
 	unsigned int getVertexCount() { return vertexCount; }
+	float GetHeightAt(int x, int z) const;
+	void SetHeightAt(int x, int z, float height);
+
 };
