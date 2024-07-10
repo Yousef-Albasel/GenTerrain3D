@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "../Models/Cube.h"
 void Renderer::Init() {
+    terrain.InitializeTerrain();
     terrain.CreateFaultFormation(64,50,0.f,50.f,0.5f);
 }
 

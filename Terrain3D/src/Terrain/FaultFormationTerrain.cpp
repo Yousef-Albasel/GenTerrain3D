@@ -1,98 +1,28 @@
 #include "FaultFormationTerrain.h"
-#include <cstdlib>
-#include <ctime>
+
 #include <iostream>
 
-float clamp(float d, float min, float max) {
-    const float t = d < min ? min : d;
-    return t > max ? max : t;
-}
 
-void FaultFormationTerrain::PrintVertices() {
- int j = 0;
-for (auto i = 0;i < vertices.size(); i++)
-{
-    std::cout << vertices[i] << ", ";
-    j++;
-    if (j > 2)
+FaultFormationTerrain::FaultFormationTerrain(int width, int depth, const float size) : terrainWidth(width), terrainDepth(depth),m_size(size)
     {
-        std::cout << std::endl;
-        j = 0;
+    m_heightmap = new Heightmap(size, width, depth);
     }
-}
-}
-
-FaultFormationTerrain::FaultFormationTerrain(int width, int depth) : terrainWidth(width), terrainDepth(depth)
-    {
-    vertexCount = terrainWidth * terrainDepth;
-    vertices.resize(vertexCount * 3);
-    indices.resize((terrainWidth - 1) * (terrainDepth - 1) * 6);
-    srand(time(0));
-    }
-
-
-
 
 void FaultFormationTerrain::InitializeTerrain()
 {
-
+    m_heightmap->InitializeHeightMap();
 }
-
-bool FaultFormationTerrain::GenerateVertices()
-{
-    int idx = 0;
-    for (int i = 0; i < terrainDepth; ++i) {
-        for (int j = 0; j < terrainWidth; ++j) {
-            vertices[idx * 3] = static_cast<float>(j) / (terrainWidth - 1) * SIZE;
-            vertices[idx * 3 + 1] = 0.f;
-            vertices[idx * 3 + 2] = static_cast<float>(i) / (terrainDepth - 1) * SIZE;
-            idx++;
-        }
-    }
-
-    int pointer = 0;
-    for (int gz = 0; gz < terrainDepth - 1; ++gz) {
-        for (int gx = 0; gx < terrainWidth - 1; ++gx) {
-
-            int topLeft = (gz * terrainWidth) + gx;
-            int topRight = topLeft + 1;
-            int bottomLeft = ((gz + 1) * terrainWidth) + gx;
-            int bottomRight = bottomLeft + 1;
-
-            indices[pointer++] = topLeft;
-            indices[pointer++] = bottomLeft;
-            indices[pointer++] = topRight;
-            indices[pointer++] = topRight;
-            indices[pointer++] = bottomLeft;
-            indices[pointer++] = bottomRight;
-        }
-    }
-
-    return true;
-}
-
 
 void FaultFormationTerrain::CreateFaultFormation(int TerrainSize, int iteration, float minHeight, float maxHeight,float filter) {
-    GenerateVertices();
     CreateFaultFormationInternal(iteration, minHeight, maxHeight,filter);
-
     setMinMaxHeight(minHeight, maxHeight);
-
-    NormalizeHeights(maxHeight,minHeight);
-
-  
-    // create the buffers
+    m_heightmap->NormalizeHeights(maxHeight,minHeight);
     InitializeBuffers();
 
 }
 
 void FaultFormationTerrain::CreateFaultFormationInternal(int Iteration, float minHeight, float maxHeight,float filter) {
-    std::cout << terrainDepth << ":" << terrainWidth;
 
-    if (vertices.empty()) {
-        std::cerr << "Error No vertices\n";
-        return;
-    }
 
     float DeltaHeight = maxHeight - minHeight;
     for (int CurIter = 0; CurIter < Iteration; CurIter++) {
@@ -115,8 +45,8 @@ void FaultFormationTerrain::CreateFaultFormationInternal(int Iteration, float mi
 
                 if (CrossProduct > 0) {
                     // Increase The height of ur original grid
-                    float currentHeight = GetHeightAt(x, z);
-                    SetHeightAt(x, z, currentHeight + Height);
+                    float currentHeight = m_heightmap->GetHeightAt(x, z);
+                    m_heightmap->SetHeightAt(x, z, currentHeight + Height);
                 }
             }
         }
@@ -124,7 +54,7 @@ void FaultFormationTerrain::CreateFaultFormationInternal(int Iteration, float mi
     
     }
 
-    ApplyFIRFilter(filter);
+    m_heightmap->ApplyFIRFilter(filter);
 }
 
 void FaultFormationTerrain::GenRandomTerrainPoints(TerrainPoint& p1, TerrainPoint& p2) {
@@ -148,103 +78,6 @@ void FaultFormationTerrain::GenRandomTerrainPoints(TerrainPoint& p1, TerrainPoin
 }
 
 
-void FaultFormationTerrain::NormalizeHeights(float MaxRange,float MinRange) {
-    float Min, Max;
-
-    GetMinMax(Min, Max);
-
-    if (Max <= Min) {
-        return;
-    }
-
-    float MinMaxDelta = Max - Min;
-    float MinMaxRange = MaxRange - MinRange;
-
-    for (int i = 0; i < terrainDepth * terrainWidth; i++) {
-        vertices[i * 3 + 1] = ((vertices[i * 3 + 1] - Min) / MinMaxDelta) * MinMaxRange + MinRange;
-    }
-
-
-}
-
-void FaultFormationTerrain::GetMinMax(float& Min, float& Max) {
-    Max = Min = vertices[1]; 
-
-    for (int i = 0; i < vertexCount; ++i) {
-        float y = vertices[i * 3 + 1];
-        if (y < Min) {
-            Min = y;
-        }
-        if (y > Max) {
-            Max = y;
-        }
-    }
-}
- 
-float FaultFormationTerrain::GetHeightAt(int x, int z) const {
-    if (x < 0 || x >= terrainWidth || z < 0 || z >= terrainDepth) {
-        std::cerr << "Error: Coordinates out of bounds." << std::endl;
-        return 0.0f;
-    }
-    int index = (z * terrainWidth + x) * 3 + 1; // y-coordinate is at offset 1
-    return vertices[index];
-}
-
-void FaultFormationTerrain::SetHeightAt(int x, int z, float height) {
-    if (x < 0 || x >= terrainWidth || z < 0 || z >= terrainDepth) {
-        std::cerr << "Error: Coordinates out of bounds." << std::endl;
-        return;
-    }
-    int index = (z * terrainWidth + x) * 3 + 1; // y-coordinate is at offset 1
-    vertices[index] = height;
-
-}
-
 void FaultFormationTerrain::InitializeBuffers() {
-    bm.InitializeBuffers(vertices, indices);
+    bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetIndices());
 }
-
-void FaultFormationTerrain::ApplyFIRFilter(float Filter)
-{
-    // left to right
-    for (int z = 0; z < terrainWidth; z++) {
-        float PrevVal = GetHeightAt(0, z);
-        for (int x = 1; x < terrainDepth; x++) {
-            PrevVal = FIRFilterSinglePoint(x, z, PrevVal, Filter);
-        }
-    }
-
-    // right to left
-    for (int z = 0; z < terrainWidth; z++) {
-        float PrevVal = GetHeightAt(terrainDepth - 1, z);
-        for (int x = terrainDepth - 2; x >= 0; x--) {
-            PrevVal = FIRFilterSinglePoint(x, z, PrevVal, Filter);
-        }
-    }
-
-    // bottom to top
-    for (int x = 0; x < terrainDepth; x++) {
-        float PrevVal = GetHeightAt(x, 0);
-        for (int z = 1; z < terrainWidth; z++) {
-            PrevVal = FIRFilterSinglePoint(x, z, PrevVal, Filter);
-        }
-    }
-
-    // top to bottom
-    for (int x = 0; x < terrainDepth; x++) {
-        float PrevVal = GetHeightAt(x, terrainDepth - 1);
-        for (int z = terrainWidth - 2; z >= 0; z--) {
-            PrevVal = FIRFilterSinglePoint(x, z, PrevVal, Filter);
-        }
-    }
-}
-
-
-float FaultFormationTerrain::FIRFilterSinglePoint(int x, int z, float PrevVal, float Filter)
-{
-    float CurVal = GetHeightAt(x, z);
-    float NewVal = Filter * PrevVal + (1 - Filter) * CurVal;
-    SetHeightAt(x, z, NewVal);
-    return NewVal;
-}
-

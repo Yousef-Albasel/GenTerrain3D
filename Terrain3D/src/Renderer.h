@@ -11,7 +11,7 @@
 #include "../Terrain/FaultFormationTerrain.h"
 class Renderer
 {
-    FaultFormationTerrain terrain{ 64,64 };
+    FaultFormationTerrain terrain{64,64,100.f };
     float lastX = 800 / 2.0f;
     float lastY = 600/ 2.0f;
     double mouseX=0.0, mouseY=0.0;
