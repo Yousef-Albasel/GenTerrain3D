@@ -2,7 +2,10 @@
 #include "../Models/Cube.h"
 void Renderer::Init() {
     terrain.InitializeTerrain();
-    terrain.CreateFaultFormation(64,50,0.f,50.f,0.5f);
+    terrain.CreateMidPointDisplacement(1.5f, 0.f, 50.f);
+    int textureUnits = 0;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
+    printf("%d", textureUnits);
 }
 
 
