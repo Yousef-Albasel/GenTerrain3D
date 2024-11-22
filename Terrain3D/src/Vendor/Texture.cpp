@@ -1,5 +1,6 @@
 #include "GL/glew.h"
 #include "Texture.h"
+
 #include "stb_image.h"
 #include <iostream>
 #include "Window.h"
@@ -13,6 +14,9 @@ Texture::Texture(const char* path): filepath(path),m_RendererID(0), m_Width(0), 
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
+    // Setup MipMaping
+    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+   
     // load and generate the texture
     data = stbi_load(path, &m_Width, &m_Height, &m_BPP, 0);
     if (data)
@@ -32,7 +36,7 @@ Texture::~Texture(){
 
 };
 void Texture::Bind(unsigned int slot) const{
-    GLCall(glActiveTexture(GL_TEXTURE0 + slot))
+    GLCall(glActiveTexture(GL_TEXTURE0 + slot));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 };
 void Texture::Unbind() const{

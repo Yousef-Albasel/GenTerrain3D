@@ -6,6 +6,8 @@ void Renderer::Init() {
     int textureUnits = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
     printf("%d", textureUnits);
+    glEnable(GL_TEXTURE_2D);
+
 }
 
 
@@ -25,6 +27,12 @@ void Renderer::Render() {
     shader.setMVP(model, view, projection);
     shader.SetUniform1f("minHeight", minHeightLoc);
     shader.SetUniform1f("maxHeight", maxHeightLoc);
+    shader.SetUniform1i("texture1", 0); // Bind texture1 to texture unit 0
+    shader.SetUniform1i("texture2", 1); // Bind texture2 to texture unit 1
+    shader.SetUniform1i("texture3", 2); // Bind texture3 to texture unit 2
+    shader.SetUniform1i("texture4", 3); // Bind texture4 to texture unit 3
+
+
     terrain.Bind();
     terrain.Draw();
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

@@ -23,10 +23,15 @@
     <ClCompile Include="src\Vendor\VertexBuffer.cpp" />
     <ClCompile Include="src\Vendor\Window.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Terrain\BaseTerrain.cpp" />
+    <ClCompile Include="Models\Cube.cpp" />
+    <ClCompile Include="src\Terrain\FaultFormationTerrain.cpp" />
+    <ClCompile Include="src\Terrain\Heightmap.cpp" />
+    <ClCompile Include="src\Terrain\MPDTerrain.cpp" />
+    <ClCompile Include="src\Vendor\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Terrain\CTerrain.h" />
-    <ClInclude Include="src\Terrain\CBruteForce.h" />
     <ClInclude Include="src\Vendor\imgui\imconfig.h" />
     <ClInclude Include="src\Vendor\imgui\imgui.h" />
     <ClInclude Include="src\Vendor\imgui\imgui_impl_glfw.h" />
@@ -47,12 +52,24 @@
     <ClInclude Include="src\Gen\HeightMapGen.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\Gen\FractualNoiseGen.h" />
+    <ClInclude Include="src\Gen\PerlinNoiseGen.h" />
+    <ClInclude Include="src\Terrain\BaseTerrain.h" />
+    <ClInclude Include="Models\Cube.h" />
+    <ClInclude Include="src\Terrain\FaultFormationTerrain.h" />
+    <ClInclude Include="src\BufferManager.h" />
+    <ClInclude Include="src\Terrain\Heightmap.h" />
+    <ClInclude Include="src\Terrain\MPDTerrain.h" />
+    <ClInclude Include="src\Vendor\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Heightmaps\test.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Heightmaps\iceland_heightmap.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass01.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

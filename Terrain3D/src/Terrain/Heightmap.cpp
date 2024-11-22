@@ -6,12 +6,14 @@ Heightmap::Heightmap(float size, int width, int depth)
     vertexCount = m_width * m_depth;
     vertices.resize(vertexCount * 3);
     indices.resize((m_width - 1) * (m_depth - 1) * 6);
+    texCoords.resize(vertexCount * 2); // Texture Coordinates are a 2D Vector
     srand(static_cast<unsigned int>(time(0)));
 }
 
 // Initialize Height Map
 void Heightmap::InitializeHeightMap() {
     GenerateVertices();
+    GenerateTextureCoords();
 }
 
 bool Heightmap::GenerateVertices()
@@ -47,6 +49,16 @@ bool Heightmap::GenerateVertices()
     return true;
 }
 
+void Heightmap::GenerateTextureCoords() {
+    int idx = 0;
+    for (int i = 0; i < m_depth; ++i) {
+        for (int j = 0; j < m_width; ++j) {
+            texCoords[idx * 2] = static_cast<float>(j) / (m_width - 1);
+            texCoords[idx * 2 + 1] = static_cast<float>(i) / (m_depth - 1);
+            idx++;
+        }
+    }
+}
 
 void Heightmap::NormalizeHeights(float MaxRange, float MinRange) {
     float Min, Max;

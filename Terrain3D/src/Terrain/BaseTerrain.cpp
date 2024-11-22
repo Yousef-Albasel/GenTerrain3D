@@ -12,7 +12,7 @@ void BaseTerrain::InitializeTerrain()
 {
     heightmap->InitializeHeightMap();
 
-    bm.InitializeBuffers(heightmap->GetVertices(), heightmap->GetIndices());
+    bm.InitializeBuffers(heightmap->GetVertices(),heightmap->GetTexCoord(), heightmap->GetIndices());
 }
 
 

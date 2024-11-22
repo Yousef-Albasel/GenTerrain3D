@@ -4,6 +4,10 @@
 #include <ctime>
 
 class Heightmap {
+private:
+    float RandomFloat();
+
+
 protected:
 	const float m_size;
 	int m_width;
@@ -11,7 +15,9 @@ protected:
 
 	int vertexCount;
 	std::vector<float> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<unsigned int> indices;    
+    std::vector<float> texCoords;
+
 
 public:
     // Constructor
@@ -22,12 +28,16 @@ public:
 
     // Generate Vertices
     bool GenerateVertices();
-
+    
+    // Generate Texture Coordinates
+    void GenerateTextureCoords();
+   
     // Getters and Setters
     float getSize() const { return m_size; }
     float GetHeightAt(int x, int z) const;
     void SetHeightAt(int x, int z, float height);
     std::vector<float> GetVertices() { return vertices; };
+    std::vector<float> GetTexCoord() { return texCoords; };
     std::vector<unsigned int> GetIndices() { return indices; };
 
     // Normalize Heights
@@ -35,6 +45,8 @@ public:
 
     // Get Min and Max Heights
     void GetMinMax(float& Min, float& Max);
+
+    float RandomFloatRange(float Start, float End);
 
     // Apply FIR Filter
     void ApplyFIRFilter(float filter);
@@ -44,5 +56,7 @@ public:
 
     // Print Vertices
     void PrintVertices();
+
+
 
 };

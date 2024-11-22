@@ -3,6 +3,8 @@
 MPDTerrain::MPDTerrain(int width, int depth, const float size) : terrainWidth(width), terrainDepth(depth), m_size(size)
 {
     m_heightmap = new Heightmap(size, width, depth);
+    for (size_t i = 0; i < m_textures.size(); ++i)
+        m_textures[i] = nullptr;
 }
 
 
@@ -10,7 +12,23 @@ MPDTerrain::MPDTerrain(int width, int depth, const float size) : terrainWidth(wi
 void MPDTerrain::InitializeTerrain()
 {
     m_heightmap->InitializeHeightMap();
+
+    // Add textures for different height ranges
+    m_textures.push_back(new Texture("Textures/low.jpg")); // Low height (grass)
+    m_textures.push_back(new Texture("Textures/optimal.jpg"));  // Medium-low height (dirt)
+    m_textures.push_back(new Texture("Textures/high.jpg"));  // Medium-high height (rock)
+    m_textures.push_back(new Texture("Textures/top.jpg"));  // High height (snow)
 }
+
+void MPDTerrain::Bind()
+{
+    bm.Bind();
+    for (size_t i = 0; i < m_textures.size(); ++i)
+    {
+        m_textures[i]->Bind(static_cast<unsigned int>(i)); // Bind each texture to a texture unit
+    }
+}
+
 
 void MPDTerrain::CreateMidPointDisplacement(float roughness, float minHeight, float maxHeight)
 {
@@ -24,7 +42,7 @@ void MPDTerrain::CreateMidPointDisplacement(float roughness, float minHeight, fl
     m_maxHeight = maxHeight;
     CreateMidPointDisplacementInternal(roughness);
     m_heightmap->NormalizeHeights(maxHeight, minHeight);
-    bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetIndices());
+    bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetTexCoord(), m_heightmap->GetIndices());
 
 }
 void MPDTerrain::CreateMidPointDisplacementInternal(float roughness)
