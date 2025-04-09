@@ -12,7 +12,7 @@
 #include "../Terrain/MPDTerrain.h"
 class Renderer
 {
-    MPDTerrain terrain{1024, 1024, 100};
+    MPDTerrain terrain{64, 64, 128};
     float lastX = 800 / 2.0f;
     float lastY = 600/ 2.0f;
     double mouseX=0.0, mouseY=0.0;

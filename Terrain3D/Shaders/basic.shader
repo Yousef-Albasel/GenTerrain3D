@@ -2,6 +2,7 @@
 #version 330 core
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec2 texCoord;
+layout(location = 2) in vec3 InNormal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -11,27 +12,30 @@ uniform float maxHeight;
 
 out float HeightRatio;  
 out vec2 v_TexCoord;
-
+out vec3 Normal;
 void main()
 {
     float DeltaHeight = maxHeight - minHeight;
     HeightRatio = (aPos.y - minHeight) / DeltaHeight;
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     v_TexCoord = texCoord;
+    Normal = InNormal;
 }
 
 #shader fragment
 #version 330 core
 
+out vec4 FragColor;
 in float HeightRatio;
 in vec2 v_TexCoord;
-out vec4 FragColor;
+in vec3 Normal;
 
 uniform sampler2D texture1; // Texture for low height (e.g., grass)
 uniform sampler2D texture2; // Texture for mid-low height (e.g., dirt)
 uniform sampler2D texture3; // Texture for mid-high height (e.g., rock)
 uniform sampler2D texture4; // Texture for high height (e.g., snow)
 
+uniform vec3 gReversedLightDir;
 void main()
 {
     // Clamp HeightRatio to avoid artifacts
@@ -52,5 +56,11 @@ void main()
     blendedColor = mix(blendedColor, color3, blend2);         // Dirt to Rock
     blendedColor = mix(blendedColor, color4, blend3);         // Rock to Snow
 
-    FragColor = blendedColor;
+    
+    // Calculate diffuse lighting
+    vec3 Normal_ = normalize(Normal);  // Ensure normal is normalized
+    float Diffuse = dot(Normal_, gReversedLightDir); // Dot product for lighting
+    Diffuse = max(0.3f, Diffuse); // Clamping diffuse to avoid dark spots
+
+    FragColor = blendedColor * Diffuse;  // Apply lighting to the color
 }

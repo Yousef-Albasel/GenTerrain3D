@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <glm/glm.hpp>
 
 class Heightmap {
 private:
@@ -17,6 +18,7 @@ protected:
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;    
     std::vector<float> texCoords;
+    std::vector<glm::vec3> normals;
 
 
 public:
@@ -32,6 +34,10 @@ public:
     // Generate Texture Coordinates
     void GenerateTextureCoords();
    
+    // Generate normal vectors
+
+    void CalculateNormals();
+   
     // Getters and Setters
     float getSize() const { return m_size; }
     float GetHeightAt(int x, int z) const;
@@ -39,6 +45,16 @@ public:
     std::vector<float> GetVertices() { return vertices; };
     std::vector<float> GetTexCoord() { return texCoords; };
     std::vector<unsigned int> GetIndices() { return indices; };
+    std::vector<float> GetNormals() {
+            std::vector<float> flatNormals;
+            flatNormals.reserve(normals.size() * 3); // Reserve space for x, y, z of each normal
+            for (const auto& normal : normals) {
+                flatNormals.push_back(normal.x);
+                flatNormals.push_back(normal.y);
+                flatNormals.push_back(normal.z);
+            }
+            return flatNormals;
+    };
 
     // Normalize Heights
     void NormalizeHeights(float MaxRange, float MinRange);

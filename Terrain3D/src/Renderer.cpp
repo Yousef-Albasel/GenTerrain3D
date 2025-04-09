@@ -32,7 +32,12 @@ void Renderer::Render() {
     shader.SetUniform1i("texture3", 2); // Bind texture3 to texture unit 2
     shader.SetUniform1i("texture4", 3); // Bind texture4 to texture unit 3
 
+    glm::vec3 lightPos = glm::vec3(10.0f, 100.0f, 10.0f); // Light's position in world space
+    glm::vec3 lightDir = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)); // Light direction (fixed or dynamic)
+    glm::vec3 gReversedLightDir = -lightDir; // Reverse the direction of the light
 
+
+    shader.SetUniform3f("gReversedLightDir", gReversedLightDir.x, gReversedLightDir.y, gReversedLightDir.z);
     terrain.Bind();
     terrain.Draw();
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

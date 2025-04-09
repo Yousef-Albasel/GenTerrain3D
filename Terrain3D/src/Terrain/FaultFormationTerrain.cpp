@@ -79,5 +79,5 @@ void FaultFormationTerrain::GenRandomTerrainPoints(TerrainPoint& p1, TerrainPoin
 
 
 void FaultFormationTerrain::InitializeBuffers() {
-    bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetTexCoord(), m_heightmap->GetIndices());
+    bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetTexCoord(),m_heightmap->GetNormals(), m_heightmap->GetIndices());
 }
