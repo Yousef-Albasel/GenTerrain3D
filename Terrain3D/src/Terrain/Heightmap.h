@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <glm/glm.hpp>
+#include <iostream>
 
 class Heightmap {
 private:
@@ -19,7 +20,7 @@ protected:
 	std::vector<unsigned int> indices;    
     std::vector<float> texCoords;
     std::vector<glm::vec3> normals;
-
+    void DebugNormals();
 
 public:
     // Constructor

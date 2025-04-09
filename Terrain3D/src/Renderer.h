@@ -12,12 +12,13 @@
 #include "../Terrain/MPDTerrain.h"
 class Renderer
 {
-    MPDTerrain terrain{64, 64, 128};
+    MPDTerrain terrain{ 128, 128, 1024};
     float lastX = 800 / 2.0f;
     float lastY = 600/ 2.0f;
     double mouseX=0.0, mouseY=0.0;
+    float rotationAngle = 0.0f;
     bool firstMouse = true;
-    Camera camera{ glm::vec3(0.f, 10.f, 5.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f) };
+    Camera camera{ glm::vec3(150.f, 300.f, 50.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f) };
     Shader shader{ "Shaders/basic.shader" };
 
 public:

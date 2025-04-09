@@ -40,8 +40,11 @@ void MPDTerrain::CreateMidPointDisplacement(float roughness, float minHeight, fl
 
     m_minHeight = minHeight;
     m_maxHeight = maxHeight;
+    float heightScale = m_size / m_heightmap->getSize();
     CreateMidPointDisplacementInternal(roughness);
-    m_heightmap->NormalizeHeights(maxHeight, minHeight);
+    m_heightmap->NormalizeHeights(maxHeight * heightScale, minHeight);
+
+    m_heightmap->CalculateNormals();
     bm.InitializeBuffers(m_heightmap->GetVertices(), m_heightmap->GetTexCoord(),m_heightmap->GetNormals(), m_heightmap->GetIndices());
 
 }

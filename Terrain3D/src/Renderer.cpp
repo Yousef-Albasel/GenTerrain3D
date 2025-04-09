@@ -2,7 +2,7 @@
 #include "../Models/Cube.h"
 void Renderer::Init() {
     terrain.InitializeTerrain();
-    terrain.CreateMidPointDisplacement(1.5f, 0.f, 50.f);
+    terrain.CreateMidPointDisplacement(.9f, 0.f, 200.f);
     int textureUnits = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
     printf("%d", textureUnits);
@@ -15,6 +15,8 @@ void Renderer::Render() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    rotationAngle += 0.01f;
+    if (rotationAngle >= 360.0f) rotationAngle = 0.0f;
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera.getViewMatrix();
@@ -32,10 +34,11 @@ void Renderer::Render() {
     shader.SetUniform1i("texture3", 2); // Bind texture3 to texture unit 2
     shader.SetUniform1i("texture4", 3); // Bind texture4 to texture unit 3
 
-    glm::vec3 lightPos = glm::vec3(10.0f, 100.0f, 10.0f); // Light's position in world space
-    glm::vec3 lightDir = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)); // Light direction (fixed or dynamic)
-    glm::vec3 gReversedLightDir = -lightDir; // Reverse the direction of the light
-
+    glm::vec3 lightPos = glm::vec3(50.0f, 500.0f, 50.0f);                // Light's position in world space
+    glm::vec3 baseDir = glm::vec3(-1.0f, -1.0f, -1.0f);
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 lightDir = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(baseDir, 0.0f)));
+    glm::vec3 gReversedLightDir = -lightDir;
 
     shader.SetUniform3f("gReversedLightDir", gReversedLightDir.x, gReversedLightDir.y, gReversedLightDir.z);
     terrain.Bind();

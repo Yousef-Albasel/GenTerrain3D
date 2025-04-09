@@ -17,7 +17,6 @@ public:
     ) {
         m_VAO.Bind();
 
-        // Combine vertices, texture coordinates, and normals into a single array
         std::vector<float> combinedVertices;
         combinedVertices.reserve(vertices.size() + texCoords.size() + normals.size());
         for (size_t i = 0; i < vertices.size() / 3; ++i) {
@@ -36,10 +35,8 @@ public:
             combinedVertices.push_back(normals[i * 3 + 2]);
         }
 
-        // Create and bind the VBO
         m_VBO = new VertexBuffer(combinedVertices.data(), combinedVertices.size() * sizeof(float));
 
-        // Define the layout (position, texture coordinates, normals)
         VertexBufferLayout layout;
         layout.Push<float>(3); // Vertex positions
         layout.Push<float>(2); // Texture coordinates

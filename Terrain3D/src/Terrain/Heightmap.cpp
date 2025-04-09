@@ -14,7 +14,6 @@ Heightmap::Heightmap(float size, int width, int depth)
 void Heightmap::InitializeHeightMap() {
     GenerateVertices();
     GenerateTextureCoords();
-    CalculateNormals();
 }
 
 bool Heightmap::GenerateVertices()
@@ -46,7 +45,7 @@ bool Heightmap::GenerateVertices()
             indices[pointer++] = bottomRight;
         }
     }
-
+    std::cout << "Vertices Generated" << std::endl;
     return true;
 }
 
@@ -59,13 +58,13 @@ void Heightmap::GenerateTextureCoords() {
             idx++;
         }
     }
+    std::cout << "Texture Coords Generated" << std::endl;
+
 }
 
 void Heightmap::CalculateNormals() {
-    // Initialize the normals vector
     normals.resize(vertexCount, glm::vec3(0.0f, 0.0f, 0.0f));
 
-    // Iterate over all triangles and calculate face normals
     for (size_t i = 0; i < indices.size(); i += 3) {
         int idx0 = indices[i];
         int idx1 = indices[i + 1];
@@ -75,14 +74,10 @@ void Heightmap::CalculateNormals() {
         glm::vec3 v1 = glm::vec3(vertices[idx1 * 3], vertices[idx1 * 3 + 1], vertices[idx1 * 3 + 2]);
         glm::vec3 v2 = glm::vec3(vertices[idx2 * 3], vertices[idx2 * 3 + 1], vertices[idx2 * 3 + 2]);
 
-        // Compute two edges of the triangle
         glm::vec3 edge1 = v1 - v0;
         glm::vec3 edge2 = v2 - v0;
-
-        // Compute the face normal (normalized cross product)
         glm::vec3 faceNormal = glm::normalize(glm::cross(edge1, edge2));
-
-        // Accumulate face normal into each vertex normal
+        
         normals[idx0] += faceNormal;
         normals[idx1] += faceNormal;
         normals[idx2] += faceNormal;
@@ -92,8 +87,22 @@ void Heightmap::CalculateNormals() {
     for (auto& normal : normals) {
         normal = glm::normalize(normal);
     }
-}
+    DebugNormals();
+    std::cout << "Normal Generated" << std::endl;
 
+}
+void Heightmap::DebugNormals() {
+    for (size_t i = 0; i < 5; i++) {
+        std::cout << "Vertex " << i << " position: "
+            << vertices[i * 3] << ", "
+            << vertices[i * 3 + 1] << ", "
+            << vertices[i * 3 + 2] << std::endl;
+        std::cout << "Normal " << i << ": "
+            << normals[i].x << ", "
+            << normals[i].y << ", "
+            << normals[i].z << std::endl;
+    }
+}
 
 void Heightmap::NormalizeHeights(float MaxRange, float MinRange) {
     float Min, Max;
