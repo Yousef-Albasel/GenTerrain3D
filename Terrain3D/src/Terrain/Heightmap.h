@@ -41,6 +41,8 @@ public:
    
     // Getters and Setters
     float getSize() const { return m_size; }
+    float getWidth() const { return m_width; }
+    float getDepth() const { return m_depth; }
     float GetHeightAt(int x, int z) const;
     void SetHeightAt(int x, int z, float height);
     std::vector<float> GetVertices() { return vertices; };
@@ -56,7 +58,7 @@ public:
             }
             return flatNormals;
     };
-
+    std::vector<glm::vec3> GetNormalsVec() { return normals; };
     // Normalize Heights
     void NormalizeHeights(float MaxRange, float MinRange);
 

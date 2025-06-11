@@ -2,12 +2,21 @@
 #include "../Models/Cube.h"
 void Renderer::Init() {
     terrain.InitializeTerrain();
-    terrain.CreateMidPointDisplacement(.9f, 0.f, 200.f);
+    terrain.CreateMidPointDisplacement(1.4f, 0.f, 300.f);
     int textureUnits = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
     printf("%d", textureUnits);
     glEnable(GL_TEXTURE_2D);
+    std::vector<std::string> faces{
+    "Skymap/right.png",
+    "Skymap/left.png",
+    "Skymap/top.png",
+    "Skymap/bottom.png",
+    "Skymap/front.png",
+    "Skymap/back.png"
+    };
 
+    skybox = new Skybox(faces, "Shaders/skybox.shader");
 }
 
 
@@ -33,22 +42,26 @@ void Renderer::Render() {
     shader.SetUniform1i("texture2", 1); // Bind texture2 to texture unit 1
     shader.SetUniform1i("texture3", 2); // Bind texture3 to texture unit 2
     shader.SetUniform1i("texture4", 3); // Bind texture4 to texture unit 3
+    // Set fog parameters
+    shader.SetUniform3f("fogColor", 0.75f, 0.85f, 0.9f);
+    shader.SetUniform1f("fogStart", 300.0f);
+    shader.SetUniform1f("fogEnd", 1500.0f);
+    shader.SetUniform1i("fogEquation", 2); 
 
     glm::vec3 lightPos = glm::vec3(50.0f, 500.0f, 50.0f);                // Light's position in world space
     glm::vec3 baseDir = glm::vec3(-1.0f, -1.0f, -1.0f);
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::vec3 lightDir = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(baseDir, 0.0f)));
-    glm::vec3 gReversedLightDir = -lightDir;
+    glm::vec3 gReversedLightDir = -baseDir;
 
     shader.SetUniform3f("gReversedLightDir", gReversedLightDir.x, gReversedLightDir.y, gReversedLightDir.z);
     terrain.Bind();
     terrain.Draw();
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    skybox->Draw(view, projection);
 
 }
 
 void Renderer::Clean() {
-    // Clean up resources
+    delete skybox;
 }
 
 

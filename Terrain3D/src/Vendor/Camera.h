@@ -27,7 +27,7 @@ public:
     // Constructor and Destructor
     Camera(glm::vec3 position, glm::vec3 direction, glm::vec3 worldUp) {
         this->viewMatrix = glm::mat4(1.f); // initalize with 1.f mat
-        this->movementSpeed = 10.f;
+        this->movementSpeed = 50.f;
         this->sensitivity = 8.f;
         this->worldUp = worldUp;
         this->cameraPos = position;

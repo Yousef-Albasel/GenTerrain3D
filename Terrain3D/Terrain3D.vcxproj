@@ -27,6 +27,8 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Terrain\CTerrain.cpp" />
     <ClCompile Include="src\Terrain\Heightmap.cpp" />
+    <ClCompile Include="src\Terrain\patch.cpp" />
+    <ClCompile Include="src\Terrain\skybox.cpp" />
     <ClCompile Include="src\Vendor\Camera.cpp" />
     <ClCompile Include="src\Vendor\ElementBuffer.cpp" />
     <ClCompile Include="src\Vendor\imgui\imgui.cpp" />
@@ -55,6 +57,8 @@
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Terrain\CTerrain.h" />
     <ClInclude Include="src\Terrain\Heightmap.h" />
+    <ClInclude Include="src\Terrain\Patch.h" />
+    <ClInclude Include="src\Terrain\skybox.h" />
     <ClInclude Include="src\Vendor\Camera.h" />
     <ClInclude Include="src\Vendor\ElementBuffer.h" />
     <ClInclude Include="src\Vendor\imgui\imconfig.h" />
@@ -83,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\basic.shader" />
+    <None Include="Shaders\skybox.shader" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

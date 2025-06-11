@@ -29,6 +29,8 @@
     <ClCompile Include="src\Terrain\Heightmap.cpp" />
     <ClCompile Include="src\Terrain\MPDTerrain.cpp" />
     <ClCompile Include="src\Vendor\Texture.cpp" />
+    <ClCompile Include="src\Terrain\patch.cpp" />
+    <ClCompile Include="src\Terrain\skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Terrain\CTerrain.h" />
@@ -61,6 +63,8 @@
     <ClInclude Include="src\Terrain\Heightmap.h" />
     <ClInclude Include="src\Terrain\MPDTerrain.h" />
     <ClInclude Include="src\Vendor\Texture.h" />
+    <ClInclude Include="src\Terrain\Patch.h" />
+    <ClInclude Include="src\Terrain\skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Heightmaps\test.txt" />
@@ -75,5 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\basic.shader" />
+    <None Include="Shaders\skybox.shader" />
   </ItemGroup>
 </Project>
