@@ -16,7 +16,7 @@ Milestones:
 
 7 - Diffuse Lighting ✅
 
-8 - Slope Lighting ❌
+8 - Sky Box ✅
 
 9 - GeoMipMapping 🔃
 
@@ -25,8 +25,6 @@ Milestones:
 11 - Tesselation (maybe) ❌
 
 12 - Erosion algorithm ❌
-
-13 - Sky dome becasue its cool ❌
 
 14 - Fog ❌
 
