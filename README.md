@@ -26,8 +26,8 @@ Milestones:
 
 12 - Erosion algorithm ❌
 
-14 - Fog ❌
+14 - Fog ✅
 
 15 - Instancing trees maybe ❌
 
-Some other stuff to make it look better i guess ❌ 
+IMGUI Controls
