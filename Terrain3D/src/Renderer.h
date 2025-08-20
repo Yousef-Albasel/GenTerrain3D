@@ -21,8 +21,10 @@ class Renderer
     float rotationAngle = 0.0f;
     bool firstMouse = true;
     Camera camera{ glm::vec3(150.f, 300.f, 50.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f) };
-    Shader shader{ "Shaders/basic.shader" };
+    //Shader shader{ "Shaders/.shader" };
     Skybox* skybox;
+    Shader* tessellationShader;
+
 public:
 
     Renderer() : skybox(nullptr) {}

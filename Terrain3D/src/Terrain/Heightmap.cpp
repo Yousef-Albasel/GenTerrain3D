@@ -8,6 +8,16 @@ Heightmap::Heightmap(float size, int width, int depth)
     indices.resize((m_width - 1) * (m_depth - 1) * 6);
     texCoords.resize(vertexCount * 2); // Texture Coordinates are a 2D Vector
     srand(static_cast<unsigned int>(time(0)));
+    m_rez = 32;
+}
+
+Heightmap::Heightmap(float size, int width, int depth, int rez = 32)
+    : m_size(size), m_width(width), m_depth(depth), m_rez(rez) {
+    vertexCount = m_width * m_depth;
+    vertices.resize(vertexCount * 3);
+    indices.resize((m_width - 1) * (m_depth - 1) * 6);
+    texCoords.resize(vertexCount * 2); // Texture Coordinates are a 2D Vector
+    srand(static_cast<unsigned int>(time(0)));
 }
 
 // Initialize Height Map
@@ -62,35 +72,35 @@ void Heightmap::GenerateTextureCoords() {
 
 }
 
-void Heightmap::CalculateNormals() {
-    normals.resize(vertexCount, glm::vec3(0.0f, 0.0f, 0.0f));
-
-    for (size_t i = 0; i < indices.size(); i += 3) {
-        int idx0 = indices[i];
-        int idx1 = indices[i + 1];
-        int idx2 = indices[i + 2];
-
-        glm::vec3 v0 = glm::vec3(vertices[idx0 * 3], vertices[idx0 * 3 + 1], vertices[idx0 * 3 + 2]);
-        glm::vec3 v1 = glm::vec3(vertices[idx1 * 3], vertices[idx1 * 3 + 1], vertices[idx1 * 3 + 2]);
-        glm::vec3 v2 = glm::vec3(vertices[idx2 * 3], vertices[idx2 * 3 + 1], vertices[idx2 * 3 + 2]);
-
-        glm::vec3 edge1 = v1 - v0;
-        glm::vec3 edge2 = v2 - v0;
-        glm::vec3 faceNormal = glm::normalize(glm::cross(edge1, edge2));
-        
-        normals[idx0] += faceNormal;
-        normals[idx1] += faceNormal;
-        normals[idx2] += faceNormal;
-    }
-
-    // Normalize all vertex normals
-    for (auto& normal : normals) {
-        normal = glm::normalize(normal);
-    }
-    DebugNormals();
-    std::cout << "Normal Generated" << std::endl;
-
-}
+//void Heightmap::CalculateNormals() {
+//    normals.resize(vertexCount, glm::vec3(0.0f, 0.0f, 0.0f));
+//
+//    for (size_t i = 0; i < indices.size(); i += 3) {
+//        int idx0 = indices[i];
+//        int idx1 = indices[i + 1];
+//        int idx2 = indices[i + 2];
+//
+//        glm::vec3 v0 = glm::vec3(vertices[idx0 * 3], vertices[idx0 * 3 + 1], vertices[idx0 * 3 + 2]);
+//        glm::vec3 v1 = glm::vec3(vertices[idx1 * 3], vertices[idx1 * 3 + 1], vertices[idx1 * 3 + 2]);
+//        glm::vec3 v2 = glm::vec3(vertices[idx2 * 3], vertices[idx2 * 3 + 1], vertices[idx2 * 3 + 2]);
+//
+//        glm::vec3 edge1 = v1 - v0;
+//        glm::vec3 edge2 = v2 - v0;
+//        glm::vec3 faceNormal = glm::normalize(glm::cross(edge1, edge2));
+//        
+//        normals[idx0] += faceNormal;
+//        normals[idx1] += faceNormal;
+//        normals[idx2] += faceNormal;
+//    }
+//
+//    // Normalize all vertex normals
+//    for (auto& normal : normals) {
+//        normal = glm::normalize(normal);
+//    }
+//    DebugNormals();
+//    std::cout << "Normal Generated" << std::endl;
+//
+//}
 void Heightmap::DebugNormals() {
     for (size_t i = 0; i < 5; i++) {
         std::cout << "Vertex " << i << " position: "
@@ -234,4 +244,154 @@ float Heightmap::RandomFloat()
 {
     float Max = RAND_MAX;
     return ((float)rand() / Max);
+}
+
+// =================== Tesselation Code ===================== //
+bool Heightmap::GenerateQuadPatches() {
+    // Calculate vertices needed: (rez+1) x (rez+1) grid for rez x rez patches
+    int patchVertexCount = (m_rez + 1) * (m_rez + 1);
+
+    // Clear and resize arrays safely
+    vertices.clear();
+    texCoords.clear();
+    indices.clear();
+    normals.clear();
+
+    vertices.resize(patchVertexCount * 3);
+    texCoords.resize(patchVertexCount * 2);
+    normals.resize(patchVertexCount, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Generate vertices for quad patches
+    int idx = 0;
+    for (int i = 0; i <= m_rez; ++i) {
+        for (int j = 0; j <= m_rez; ++j) {
+            // Ensure we don't exceed array bounds
+            if (idx >= patchVertexCount) {
+                std::cout << "ERROR: Vertex index out of bounds!" << std::endl;
+                return false;
+            }
+
+            // World space position: span from -size/2 to +size/2
+            vertices[idx * 3 + 0] = (static_cast<float>(j) / m_rez - 0.5f) * m_size;     // X
+            vertices[idx * 3 + 1] = 0.0f;                                                // Y
+            vertices[idx * 3 + 2] = (static_cast<float>(i) / m_rez - 0.5f) * m_size;     // Z
+
+            // Texture coordinates: span 0 to 1 across resolution blocks
+            texCoords[idx * 2 + 0] = static_cast<float>(j) / m_rez;     // U
+            texCoords[idx * 2 + 1] = static_cast<float>(i) / m_rez;     // V
+
+            idx++;
+        }
+    }
+
+    // Generate indices for quad patches (for use with GL_PATCHES)
+    int numPatches = m_rez * m_rez;
+    indices.resize(numPatches * 4); // 4 vertices per quad patch
+    int indexPointer = 0;
+
+    for (int i = 0; i < m_rez; ++i) {
+        for (int j = 0; j < m_rez; ++j) {
+            int topLeft = i * (m_rez + 1) + j;
+            int topRight = topLeft + 1;
+            int bottomLeft = (i + 1) * (m_rez + 1) + j;
+            int bottomRight = bottomLeft + 1;
+
+            // Bounds checking for indices
+            if (topLeft >= patchVertexCount || topRight >= patchVertexCount ||
+                bottomLeft >= patchVertexCount || bottomRight >= patchVertexCount) {
+                std::cout << "ERROR: Index out of bounds!" << std::endl;
+                std::cout << "Patch (" << i << ", " << j << "): "
+                    << topLeft << ", " << topRight << ", "
+                    << bottomLeft << ", " << bottomRight
+                    << " (max: " << patchVertexCount << ")" << std::endl;
+                return false;
+            }
+
+            // Each patch is a quad (4 vertices) - order matters for tessellation
+            indices[indexPointer++] = topLeft;
+            indices[indexPointer++] = topRight;
+            indices[indexPointer++] = bottomRight;
+            indices[indexPointer++] = bottomLeft;
+        }
+    }
+
+    // Update vertex count for the new geometry
+    vertexCount = patchVertexCount;
+
+    std::cout << "Quad patches generated successfully: " << m_rez << "x" << m_rez
+        << " (" << vertexCount << " vertices, " << numPatches << " patches)" << std::endl;
+    std::cout << "Arrays - Vertices: " << vertices.size() << ", TexCoords: " << texCoords.size()
+        << ", Indices: " << indices.size() << ", Normals: " << normals.size() << std::endl;
+
+    return true;
+}
+void Heightmap::CalculateNormals() {
+    // For tessellation, we don't need complex normal calculation since
+    // normals will be computed in the tessellation evaluation shader
+    // Just provide simple upward-pointing normals
+
+    normals.clear();
+    normals.resize(vertexCount, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    std::cout << "Simple normals generated for tessellation: " << normals.size() << " normals" << std::endl;
+}
+
+// Alternative: If you want proper normal calculation for quad patches
+void Heightmap::CalculateNormalsForQuadPatches() {
+    normals.clear();
+    normals.resize(vertexCount, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    // Process each quad patch (4 vertices per patch)
+    for (size_t i = 0; i < indices.size(); i += 4) {
+        // Each quad has 4 vertices
+        unsigned int idx0 = indices[i];     // Top-left
+        unsigned int idx1 = indices[i + 1]; // Top-right
+        unsigned int idx2 = indices[i + 2]; // Bottom-right
+        unsigned int idx3 = indices[i + 3]; // Bottom-left
+
+        // Bounds checking
+        if (idx0 >= vertexCount || idx1 >= vertexCount ||
+            idx2 >= vertexCount || idx3 >= vertexCount) {
+            std::cout << "ERROR: Index out of bounds in normal calculation!" << std::endl;
+            continue;
+        }
+
+        // Get vertex positions
+        glm::vec3 v0(vertices[idx0 * 3], vertices[idx0 * 3 + 1], vertices[idx0 * 3 + 2]);
+        glm::vec3 v1(vertices[idx1 * 3], vertices[idx1 * 3 + 1], vertices[idx1 * 3 + 2]);
+        glm::vec3 v2(vertices[idx2 * 3], vertices[idx2 * 3 + 1], vertices[idx2 * 3 + 2]);
+        glm::vec3 v3(vertices[idx3 * 3], vertices[idx3 * 3 + 1], vertices[idx3 * 3 + 2]);
+
+        // Calculate two triangles from the quad
+        // Triangle 1: v0, v1, v2
+        glm::vec3 edge1_1 = v1 - v0;
+        glm::vec3 edge2_1 = v2 - v0;
+        glm::vec3 normal1 = glm::normalize(glm::cross(edge1_1, edge2_1));
+
+        // Triangle 2: v0, v2, v3
+        glm::vec3 edge1_2 = v2 - v0;
+        glm::vec3 edge2_2 = v3 - v0;
+        glm::vec3 normal2 = glm::normalize(glm::cross(edge1_2, edge2_2));
+
+        // Average the normals from both triangles
+        glm::vec3 avgNormal = glm::normalize((normal1 + normal2) * 0.5f);
+
+        // Add to all 4 vertices of the quad
+        normals[idx0] += avgNormal;
+        normals[idx1] += avgNormal;
+        normals[idx2] += avgNormal;
+        normals[idx3] += avgNormal;
+    }
+
+    // Normalize all accumulated normals
+    for (auto& normal : normals) {
+        if (glm::length(normal) > 0.0f) {
+            normal = glm::normalize(normal);
+        }
+        else {
+            normal = glm::vec3(0.0f, 1.0f, 0.0f); // Default upward normal
+        }
+    }
+
+    std::cout << "Quad patch normals calculated: " << normals.size() << " normals" << std::endl;
 }

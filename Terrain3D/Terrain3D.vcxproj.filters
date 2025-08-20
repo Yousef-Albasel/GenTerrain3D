@@ -78,7 +78,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\basic.shader" />
+    <None Include="Shaders\tessellation_vertex.shader" />
     <None Include="Shaders\skybox.shader" />
+    <None Include="Shaders\TCS.shader" />
+    <None Include="Shaders\TES.shader" />
   </ItemGroup>
 </Project>

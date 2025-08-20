@@ -14,6 +14,7 @@ protected:
 	const float m_size;
 	int m_width;
 	int m_depth;
+    int m_rez;
 
 	int vertexCount;
 	std::vector<float> vertices;
@@ -25,13 +26,17 @@ protected:
 public:
     // Constructor
     Heightmap(float size, int width, int depth);
-
+    Heightmap(float size, int width, int depth, int rez);
+        
     // Initialize Height Map
     void InitializeHeightMap();
+    void CalculateNormalsForQuadPatches();
 
     // Generate Vertices
     bool GenerateVertices();
-    
+    bool GenerateQuadPatches();
+    std::vector<float> GetNormals() const;
+
     // Generate Texture Coordinates
     void GenerateTextureCoords();
    
