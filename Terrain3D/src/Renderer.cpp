@@ -4,7 +4,7 @@ void Renderer::Init() {
     terrain.InitializeTerrain();
     // Use tessellation version
     terrain.CreateMidPointDisplacementTes(2.0f, 0.0f, 300.0f);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     int textureUnits = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
