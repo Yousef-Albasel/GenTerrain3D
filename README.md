@@ -41,7 +41,7 @@ In Visual Studio, set the solution platform to x86 (32-bit).
 If the option doesn’t exist, add it via Configuration Manager.
 ## Screenshots
 
-![Terrain Preview]("UML Diagram.png")
+![Terrain Preview](UML Diagram.png)
 ![Preview](img1.png)
 ![Wireframe Preview](img2.png)
 
